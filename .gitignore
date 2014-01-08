@@ -1,0 +1,8 @@
+node_modules
+components
+lib-cov
+coverage.html
+npm-debug.log
+*.tgz
+*.patch
+*.diff
