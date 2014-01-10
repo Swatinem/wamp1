@@ -28,7 +28,7 @@ describe('wamp1', function () {
 		var client = new Wamp('ws://localhost:8080', function (welcome) {
 			throw new Error('unreached');
 		});
-		client.on('_error_', function (err) {
+		client.on('error', function (err) {
 			err.message.should.eql('Server "Autobahn/0.5.1" uses incompatible protocol version 2');
 			done();
 		});
@@ -57,23 +57,23 @@ describe('wamp1', function () {
 			JSON.parse(msg).should.eql([5, 'event']);
 			done();
 		});
-		client.on('event', function () {});
+		client.subscribe('event', function () {});
 	});
 	it('should support unsubscribing from events', function (done) {
 		server.once('message', function (msg) {
 			JSON.parse(msg).should.eql([6, 'event']);
 			done();
 		});
-		client.off('event');
+		client.unsubscribe('event');
 	});
 	it('should route events to the correct callback', function (done) {
-		client.on('http://example.com/simple', function (data) {
+		client.subscribe('http://example.com/simple', function (data) {
 			data.should.eql("Hello, I am a simple event.");
 			done();
 		});
 		server.send(JSON.stringify([8, "http://example.com/simple", "Hello, I am a simple event."]));
 	});
-	it('should support multiple `on()` calls', function (done) {
+	it('should support multiple `subscribe()` calls', function (done) {
 		var servercalls = 0;
 		var clientcalls = 0;
 		server.on('message', function (msg) {
@@ -81,11 +81,11 @@ describe('wamp1', function () {
 			JSON.parse(msg).should.eql([5, 'event']);
 			server.send(JSON.stringify([8, 'event', 'foo']));
 		});
-		client.on('event', function (ev) {
+		client.subscribe('event', function (ev) {
 			clientcalls++;
 			ev.should.eql('foo');
 		});
-		client.on('event', function (ev) {
+		client.subscribe('event', function (ev) {
 			ev.should.eql('foo');
 			servercalls.should.eql(1);
 			clientcalls.should.eql(1);
@@ -102,16 +102,16 @@ describe('wamp1', function () {
 		var fn = function (ev) {
 			throw new Error('unreached');
 		};
-		client.on('event', fn);
-		client.on('event', function (ev) {
+		client.subscribe('event', fn);
+		client.subscribe('event', function (ev) {
 			ev.should.eql('foo');
 			servercalls.should.eql(1);
 			done();
 		});
-		client.off('event', fn);
+		client.unsubscribe('event', fn);
 	});
-	it('should support a generic `_event_` event', function (done) {
-		client.on('_event_', function (ev, data) {
+	it('should support a generic `event` event', function (done) {
+		client.on('event', function (ev, data) {
 			ev.should.eql('event');
 			data.should.eql('foobar');
 			done();
@@ -124,28 +124,28 @@ describe('wamp1', function () {
 				JSON.parse(msg).should.eql([7, 'uri', null]);
 				done();
 			});
-			client.emit('uri', null);
+			client.publish('uri', null);
 		});
 		it('should allow publishing with excludesMe', function (done) {
 			server.once('message', function (msg) {
 				JSON.parse(msg).should.eql([7, 'uri', null, true]);
 				done();
 			});
-			client.emit('uri', null, true);
+			client.publish('uri', null, true);
 		});
 		it('should allow publishing with exclude list', function (done) {
 			server.once('message', function (msg) {
 				JSON.parse(msg).should.eql([7, 'uri', null, ['foo', 'bar']]);
 				done();
 			});
-			client.emit('uri', null, ['foo', 'bar']);
+			client.publish('uri', null, ['foo', 'bar']);
 		});
 		it('should allow publishing with eligible list', function (done) {
 			server.once('message', function (msg) {
 				JSON.parse(msg).should.eql([7, 'uri', null, [], ['foo', 'bar']]);
 				done();
 			});
-			client.emit('uri', null, [], ['foo', 'bar']);
+			client.publish('uri', null, [], ['foo', 'bar']);
 		});
 	});
 	describe('calls', function () {
@@ -212,8 +212,8 @@ describe('wamp1', function () {
 				done();
 			});
 		});
-		it('should `_error_` on not matching results', function (done) {
-			client.on('_error_', function (err) {
+		it('should error on not matching results', function (done) {
+			client.on('error', function (err) {
 				err.message.should.eql('Unmatched callresult received from server');
 				err.type.should.eql('callresult');
 				err.callId.should.eql('2');
@@ -222,8 +222,8 @@ describe('wamp1', function () {
 			});
 			server.send(JSON.stringify([3, '2', null]));
 		});
-		it('should `_error_` on not matching errors', function (done) {
-			client.on('_error_', function (err) {
+		it('should error on not matching errors', function (done) {
+			client.on('error', function (err) {
 				err.message.should.eql('Unmatched callerror received from server');
 				err.type.should.eql('callerror');
 				err.callId.should.eql('2');

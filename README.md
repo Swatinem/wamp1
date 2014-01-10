@@ -33,22 +33,35 @@ top of this one.
 Creates a websocket connection to `wsUrl` and calls `callback` with the
 resulting welcome message.
 
+### wamp.socket
+
+This is the underlying WebSocket object. It is using
+[ws](https://github.com/einaros/ws) in node and
+[stagas/websocket](https://github.com/stagas/websocket) in component, both
+of which have the same API.
+
+### wamp.on(event, callback)
+
+Wamp will forward any event that was subcribed to to a generic `event` event.
+It will emit a `error` event in case the protocol version is not supported or
+in case the server sends callresults that were not requested.
+
 ### wamp.sessionId
 
 This property reflects the session id that the server generates and sends via
 the handshake.
 
-### wamp.on(event, callback)
+### wamp.subscribe(event, callback)
 
 Subscribe to `event` on the server. The `callback` is called when the server
 sends that event.
 
-### wamp.off(event, [callback])
+### wamp.unsubscribe(event, [callback])
 
 Unsubscribe from `event` on the server. This takes care of multiple listeners
 for you.
 
-### wamp.emit(event, data, [excludeMe] | [exclude] , [eligible])
+### wamp.publish(event, data, [excludeMe] | [exclude] , [eligible])
 
 Publish an `event` with `data` to the server.
 See the [spec](http://wamp.ws/spec/#publish_message) for the optional arguments
