@@ -11,6 +11,7 @@
     "ws": "*"
   },
   "devDependencies": {
+    "jshint": "*",
     "mocha": "*",
     "should": "*",
     "jscoverage": "*",

@@ -1,3 +1,5 @@
+/* vim: set shiftwidth=2 tabstop=2 noexpandtab textwidth=80 wrap : */
+"use strict";
 
 var should = require('should');
 var WebSocketServer = require('ws').Server;
@@ -12,7 +14,7 @@ describe('wamp1', function () {
 		wss.once('connection', function (ws) {
 			ws.send(JSON.stringify([0, "v59mbCGDXZ7WTyxB", 1, "Autobahn/0.5.1"]));
 		});
-		var client = new Wamp('ws://localhost:8080', function (welcome) {
+		new Wamp('ws://localhost:8080', function (welcome) {
 			welcome.should.eql({
 				sessionId: "v59mbCGDXZ7WTyxB",
 				version: 1,
@@ -25,7 +27,7 @@ describe('wamp1', function () {
 		wss.once('connection', function (ws) {
 			ws.send(JSON.stringify([0, "v59mbCGDXZ7WTyxB", 2, "Autobahn/0.5.1"]));
 		});
-		var client = new Wamp('ws://localhost:8080', function (welcome) {
+		var client = new Wamp('ws://localhost:8080', function () {
 			throw new Error('unreached');
 		});
 		client.on('error', function (err) {
@@ -99,7 +101,7 @@ describe('wamp1', function () {
 			JSON.parse(msg).should.eql([5, 'event']);
 			server.send(JSON.stringify([8, 'event', 'foo']));
 		});
-		var fn = function (ev) {
+		var fn = function () {
 			throw new Error('unreached');
 		};
 		client.subscribe('event', fn);
@@ -217,7 +219,7 @@ describe('wamp1', function () {
 				err.message.should.eql('Unmatched callresult received from server');
 				err.type.should.eql('callresult');
 				err.callId.should.eql('2');
-				(err.result === null).should.be.true;
+				(err.result === null).should.be.true; // jshint ignore:line
 				done();
 			});
 			server.send(JSON.stringify([3, '2', null]));
