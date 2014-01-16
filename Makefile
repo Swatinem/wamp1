@@ -2,7 +2,7 @@ test: lint
 	NODE_ENV=test ./node_modules/.bin/mocha --harmony
 
 lint:
-	./node_modules/.bin/jshint ./lib ./test ./index.js
+	-./node_modules/.bin/jshint ./lib ./test ./index.js
 
 lib-cov: clean-cov
 	./node_modules/.bin/jscoverage lib lib-cov

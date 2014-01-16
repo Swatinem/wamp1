@@ -59,12 +59,50 @@ describe('wamp1', function () {
 	it('should save the sessionId', function () {
 		client.sessionId.should.eql("v59mbCGDXZ7WTyxB");
 	});
-	it('should send out prefix messages', function (done) {
-		server.once('message', function (msg) {
-			JSON.parse(msg).should.eql([1, "calc", "http://example.com/simple/calc#"]);
-			done();
+	describe('Prefixes', function () {
+		it('should send out prefix messages', function (done) {
+			server.once('message', function (msg) {
+				JSON.parse(msg).should.eql([1, "calc", "http://example.com/simple/calc#"]);
+				done();
+			});
+			client.prefix('calc', 'http://example.com/simple/calc#');
 		});
-		client.prefix('calc', 'http://example.com/simple/calc#');
+		it('should also call expanded callbacks', function (done) {
+			server.once('message', function (msg) {
+				JSON.parse(msg).should.eql([1, "calc", "http://example.com/simple/calc#"]);
+				server.once('message', function (msg) {
+					JSON.parse(msg).should.eql([5, 'http://example.com/simple/calc#foo']);
+					server.once('message', function (msg) {
+						JSON.parse(msg).should.eql([5, 'calc:foo']);
+						server.send(JSON.stringify([8, 'calc:foo', 'foobar']));
+					});
+					client.subscribe('calc:foo', function () {});
+				});
+				client.subscribe('http://example.com/simple/calc#foo', function (ev) {
+					ev.should.eql('foobar');
+					done();
+				});
+			});
+			client.prefix('calc', 'http://example.com/simple/calc#');
+		});
+		it('should also call prefixed callbacks', function (done) {
+			server.once('message', function (msg) {
+				JSON.parse(msg).should.eql([1, "calc", "http://example.com/simple/calc#"]);
+				server.once('message', function (msg) {
+					JSON.parse(msg).should.eql([5, 'calc:foo']);
+					server.once('message', function (msg) {
+						JSON.parse(msg).should.eql([5, 'http://example.com/simple/calc#foo']);
+						server.send(JSON.stringify([8, 'http://example.com/simple/calc#foo', 'foobar']));
+					});
+					client.subscribe('http://example.com/simple/calc#foo', function () {});
+				});
+				client.subscribe('calc:foo', function (ev) {
+					ev.should.eql('foobar');
+					done();
+				});
+			});
+			client.prefix('calc', 'http://example.com/simple/calc#');
+		});
 	});
 	it('should support subscribing to events', function (done) {
 		server.once('message', function (msg) {
