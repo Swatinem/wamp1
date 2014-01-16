@@ -35,6 +35,18 @@ describe('wamp1', function () {
 			done();
 		});
 	});
+	it('should support omitting the welcome callback', function (done) {
+		wss.once('connection', function (ws) {
+			ws.send(JSON.stringify([0, "v59mbCGDXZ7WTyxB", 1, "Autobahn/0.5.1"]));
+			ws.send(JSON.stringify([8, "event", "foo"]));
+		});
+		var client = new Wamp('ws://localhost:8080');
+		client.on('event', function (ev, data) {
+			ev.should.eql('event');
+			data.should.eql('foo');
+			done();
+		});
+	});
 	beforeEach(function (done) {
 		wss.once('connection', function (ws) {
 			server = ws;

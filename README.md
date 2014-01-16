@@ -28,9 +28,9 @@ top of this one.
 
 ## Usage
 
-### new Wamp(wsUrl, callback)
+### new Wamp(url, [callback])
 
-Creates a websocket connection to `wsUrl` and calls `callback` with the
+Creates a websocket connection to `url` and optionally calls `callback` with the
 resulting welcome message.
 
 ### wamp.socket
