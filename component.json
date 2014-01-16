@@ -10,7 +10,7 @@
   ],
   "dependencies": {
     "component/emitter": "*",
-    "stagas/websocket": "*"
+    "Swatinem/websocket": "*"
   },
   "license": "LGPLv3"
 }

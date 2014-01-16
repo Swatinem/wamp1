@@ -1,8 +1,10 @@
 /* vim: set shiftwidth=2 tabstop=2 noexpandtab textwidth=80 wrap : */
+/* global WebSocket:true */
 "use strict";
 
 var should = require('should');
-var WebSocketServer = require('ws').Server;
+var WebSocket = require('ws');
+var WebSocketServer = WebSocket.Server;
 
 var Wamp = require('../');
 
@@ -102,6 +104,49 @@ describe('wamp1', function () {
 				});
 			});
 			client.prefix('calc', 'http://example.com/simple/calc#');
+		});
+	});
+	it('should re-send all prefixes and subscriptions', function (done) {
+		var server;
+		var client;
+		var count = 0;
+		function serverhandler(msg) {
+			msg = JSON.parse(msg);
+			switch (count++) {
+				case 0:
+				case 2:
+					msg.should.eql([1, 'foo', 'bar']);
+				break;
+				case 1:
+					msg.should.eql([5, 'event']);
+					server.close();
+				break;
+				case 3:
+					msg.should.eql([5, 'event']);
+					server.send(JSON.stringify([8, 'event', 'foobar']));
+				break;
+			}
+		}
+		function connectionhandler(ws) {
+			server = ws;
+			server.on('message', serverhandler);
+			ws.send(JSON.stringify([0, "v59mbCGDXZ7WTyxB", 1, "Autobahn/0.5.1"]));
+		}
+		client = new Wamp('ws://localhost:8080', function () {
+			if (client._prefixes.foo)
+				return;
+			client.prefix('foo', 'bar');
+			client.subscribe('event', function (ev) {
+				ev.should.eql('foobar');
+				done();
+			});
+		});
+		wss.once('connection', connectionhandler);
+		client.socket.on('close', function () {
+			wss.once('connection', connectionhandler);
+			client.socket = new WebSocket('ws://localhost:8080');
+			// FIXME: we don‘t have a completely transparent reconnecting socket yet
+			client.socket.on('message', client._handle.bind(client));
 		});
 	});
 	it('should support subscribing to events', function (done) {
