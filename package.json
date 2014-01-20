@@ -8,9 +8,10 @@
     "Arpad Borsos <arpad.borsos@googlemail.com> (http://swatinem.de)"
   ],
   "dependencies": {
-    "ws": "*"
+    "websocket-buffering": "*"
   },
   "devDependencies": {
+    "ws": "*",
     "jshint": "*",
     "mocha": "*",
     "should": "*",

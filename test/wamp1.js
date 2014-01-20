@@ -106,7 +106,7 @@ describe('wamp1', function () {
 			client.prefix('calc', 'http://example.com/simple/calc#');
 		});
 	});
-	it('should re-send all prefixes and subscriptions', function (done) {
+	it('should re-send all prefixes and subscriptions on second `open` event', function (done) {
 		var server;
 		var client;
 		var count = 0;
