@@ -331,6 +331,20 @@ describe('wamp1', function () {
 			});
 				server.send(JSON.stringify([4, '2', 'error1', 'description', 'details']));
 		});
+		it('should produce random call id', function (done) {
+			server.once('message', function (msg) {
+				msg = JSON.parse(msg);
+				msg[1].should.not.eql('0');
+				msg[2].should.eql('fn');
+				msg.should.have.length(3);
+				server.send(JSON.stringify([3, msg[1], null]));
+			});
+			client.call('fn', function (err, res) {
+				should.not.exist(err);
+				should.not.exist(res);
+				done();
+			});
+		});
 	});
 });
 
