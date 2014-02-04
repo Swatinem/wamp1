@@ -1,7 +1,7 @@
 {
   "name": "wamp1",
   "repo": "Swatinem/wamp1",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Very simple WAMP v1 implementation",
   "keywords": ["websocket", "wamp"],
   "main": "lib/index.js",

@@ -1,7 +1,7 @@
 {
   "name": "wamp1",
   "description": "Very simple WAMP v1 implementation",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "keywords": ["websocket", "wamp"],
   "main": "./index",
   "maintainers": [
