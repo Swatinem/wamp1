@@ -28,10 +28,16 @@ top of this one.
 
 ## Usage
 
-### new Wamp(url, [callback])
+### new Wamp(url, [options], [callback])
 
 Creates a websocket connection to `url` and optionally calls `callback` with the
 resulting welcome message.
+
+If `options.omitSubscribe` is set to `true`, subscribe and unsubscribe calls
+will *not* be sent to the server. The events however *are* routed to the
+specified callbacks.
+This is useful in case the server will send out events regardless of whether
+the client subscribed or not. It will simply reduce network chatter.
 
 ### wamp.socket
 

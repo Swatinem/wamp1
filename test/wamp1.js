@@ -170,6 +170,21 @@ describe('wamp1', function () {
 		});
 		server.send(JSON.stringify([8, "http://example.com/simple", "Hello, I am a simple event."]));
 	});
+	it('should support omitting un/subscribe', function () {
+		wss.once('connection', function (ws) {
+			ws.send(JSON.stringify([0, "v59mbCGDXZ7WTyxB", 1, "Autobahn/0.5.1"]));
+			ws.once('message', function () {
+				throw new Error('unreached');
+			});
+		});
+		var client = new Wamp('ws://localhost:8080', {omitSubscribe: true});
+		client.subscribe('http://example.com/simple', function (data) {
+			data.should.eql("Hello, I am a simple event.");
+			client.unsubscribe('http://example.com/simple');
+			done();
+		});
+		server.send(JSON.stringify([8, "http://example.com/simple", "Hello, I am a simple event."]));
+	});
 	it('should support multiple `subscribe()` calls', function (done) {
 		var servercalls = 0;
 		var clientcalls = 0;
