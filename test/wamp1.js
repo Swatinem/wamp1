@@ -170,7 +170,7 @@ describe('wamp1', function () {
 		});
 		server.send(JSON.stringify([8, "http://example.com/simple", "Hello, I am a simple event."]));
 	});
-	it('should support omitting un/subscribe', function () {
+	it.skip('should support omitting un/subscribe', function (done) {
 		wss.once('connection', function (ws) {
 			ws.send(JSON.stringify([0, "v59mbCGDXZ7WTyxB", 1, "Autobahn/0.5.1"]));
 			ws.once('message', function () {

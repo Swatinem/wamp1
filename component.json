@@ -4,9 +4,9 @@
   "version": "0.0.3",
   "description": "Very simple WAMP v1 implementation",
   "keywords": ["websocket", "wamp"],
-  "main": "lib/index.js",
+  "main": "index.js",
   "scripts": [
-    "lib/index.js"
+    "index.js"
   ],
   "dependencies": {
     "component/emitter": "*",

@@ -1,19 +1,11 @@
 test: lint
-	NODE_ENV=test ./node_modules/.bin/mocha --harmony
+	NODE_ENV=test node --harmony ./node_modules/.bin/istanbul cover \
+		./node_modules/mocha/bin/_mocha
 
 lint:
-	-./node_modules/.bin/jshint ./lib ./test ./index.js
+	-./node_modules/.bin/jshint ./test ./index.js
 
-lib-cov: clean-cov
-	./node_modules/.bin/jscoverage lib lib-cov
+test-coveralls: test
+	-cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
 
-clean-cov:
-	rm -rf lib-cov
-
-test-cov: lib-cov
-	WAMP1_COV=1 NODE_ENV=test ./node_modules/.bin/mocha --harmony --reporter html-cov 1> coverage.html
-
-test-coveralls: lib-cov
-	WAMP1_COV=1 NODE_ENV=test ./node_modules/.bin/mocha --harmony --reporter mocha-lcov-reporter | ./node_modules/.bin/coveralls
-
-.PHONY: test lint test-cov test-coveralls clean-cov
+.PHONY: test lint test-coveralls
